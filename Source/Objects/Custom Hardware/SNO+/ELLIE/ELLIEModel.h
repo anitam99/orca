@@ -7,6 +7,8 @@
 //  Revision history:
 //  Ed Leming 30/12/2015 - Memory updates and tidy up.
 //
+//  Anita Masuskapoe 22/02/2023 - Added TELLIE Expert database support
+//
 
 #import <Foundation/Foundation.h>
 #import "ELLIEController.h"
@@ -52,7 +54,11 @@
     //tellie settings
     NSMutableDictionary* _tellieFireParameters;
     NSMutableDictionary* _tellieFibreMapping;
-    NSMutableDictionary* _tellieNodeMapping;
+    NSMutableDictionary* _tellieNodeMapping;    
+    NSMutableDictionary* _tellieFibreMainSettings;
+    NSMutableDictionary* _telliePCASettings;
+    NSMutableDictionary* _tellieGeneralSettings;
+    
     NSArray* _tellieRunNames;
     BOOL _ellieFireFlag;
     BOOL _tellieRunFlag;
@@ -85,6 +91,9 @@
 @property (nonatomic,retain) NSMutableDictionary* tellieFibreMapping;
 @property (nonatomic,retain) NSMutableDictionary* tellieNodeMapping;
 @property (nonatomic,retain) NSArray* tellieRunNames;
+@property (nonatomic,retain) NSMutableDictionary* tellieFibreMainSettings;
+@property (nonatomic,retain) NSMutableDictionary* telliePCASettings;
+@property (nonatomic,retain) NSMutableDictionary* tellieGeneralSettings;
 @property (nonatomic,retain) NSMutableDictionary* amellieFireParameters;
 @property (nonatomic,retain) NSMutableDictionary* amellieFibreMapping;
 @property (nonatomic,retain) NSMutableDictionary* amellieNodeMapping;
@@ -157,6 +166,12 @@
                                     inSlave:(BOOL)mode
                                     isAMELLIE:(BOOL)amellie;
 
+-(NSMutableDictionary*) returnTellieFibreMainSettings:(NSString*)fibre_id;
+-(NSMutableDictionary*) returnAllTellieFibreMainSettings;
+-(NSMutableDictionary*) returnTelliePCASettings;
+-(NSMutableDictionary*) returnTellieGeneralSettings;
+-(NSMutableArray*) returnTellieNodeFibres:(NSUInteger)node;
+
 -(NSNumber*)calcTellieChannelPulseSettings:(NSUInteger)channel
                                withNPhotons:(NSUInteger)photons
                           withFireFrequency:(NSUInteger)frequency
@@ -164,8 +179,8 @@
                                   isAMELLIE:(BOOL)amellie;
 
 -(NSNumber*)calcTellieChannelForFibre:(NSString*)fibre;
+-(NSNumber*)calcTellieExpertChannelForFibre:(NSString*)fibre;
 -(NSString*)calcTellieFibreForNode:(NSUInteger)node;
--(NSString*) calcTellieFibreForChannel:(NSUInteger)channel;
 -(NSNumber*)calcPhotonsForIPW:(NSUInteger)ipw forChannel:(NSUInteger)channel inSlave:(BOOL)inSlave;
 -(NSString*)selectPriorityFibre:(NSArray*)fibres forNode:(NSUInteger)node;
 -(void)startTellieRunThread:(NSDictionary*)fireCommands forTELLIE:(BOOL)forTELLIE;
@@ -180,9 +195,15 @@
 -(void)updateTellieRunDocument;
 -(void)loadTELLIEStaticsFromDB;
 -(void)loadTELLIERunPlansFromDB;
+-(void)loadTellieFibreMainSettingsFromDB;
+-(void)loadTelliePCASettingsFromDB;
+-(void)loadTellieGeneralSettingsFromDB;
 -(void)parseTellieFirePars:(id)aResult;
 -(void)parseTellieFibreMap:(id)aResult;
 -(void)parseTellieNodeMap:(id)aResult;
+-(void)parseTellieFibreMainSettings:(id)aResult;
+-(void)parseTelliePCASettings:(id)aResult;
+-(void)parseTellieGeneralSettings:(id)aResult;
 
 /************************/
 /*   AMELLIE Functions   */
@@ -251,6 +272,7 @@ extern NSString* ORSMELLIEEmergencyStop;
 extern NSString* ORELLIEFlashing;
 
 extern NSString* ORTELLIERunStartNotification;
+extern NSString* ORTELLIEGeneralRunStartNotification;
 extern NSString* ORSMELLIERunStartNotification;
 extern NSString* ORAMELLIERunStartNotification;
 extern NSString* ORSMELLIERunFinishedNotification;

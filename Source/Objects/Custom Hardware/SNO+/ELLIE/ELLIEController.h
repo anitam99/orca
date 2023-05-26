@@ -8,6 +8,8 @@
 //  Ed Leming 04/01/2016 -  Removed global variables to move logic to
 //                          ELLIEModel
 //
+//  Anita Masuskapoe 22/02/2023 - Added TELLIE Expert database support
+//
 
 #import <Foundation/Foundation.h>
 
@@ -52,11 +54,10 @@
     IBOutlet NSTextField *tellieChannelTf;
     IBOutlet NSTextField *telliePulseWidthTf;
     IBOutlet NSTextField *telliePulseFreqTf;
-    IBOutlet NSTextField *telliePulseHeightTf;
     IBOutlet NSTextField *tellieFibreDelayTf;
     IBOutlet NSTextField *tellieTriggerDelayTf;
     IBOutlet NSTextField *tellieNoPulsesTf;
-    IBOutlet NSTextField *telliePhotonsTf;
+    IBOutlet NSTextField *telliePinTimeoutTf;
     
     IBOutlet NSTextField *tellieExpertNodeTf;
     IBOutlet NSPopUpButton *tellieExpertFibreSelectPb;
@@ -64,6 +65,7 @@
     
     IBOutlet NSButtonCell *tellieExpertTuningCb;
     IBOutlet NSTextField *tellieExpertValidationStatusTf;
+    IBOutlet NSTextField *tellieExpertFibresTf;
 
     IBOutlet NSButton *tellieExpertFireButton;
     IBOutlet NSButton *tellieExpertStopButton;
@@ -81,7 +83,8 @@
     IBOutlet NSPopUpButton *tellieBuildOpMode;
     IBOutlet NSButton *tellieBuildValidate;
     IBOutlet NSButton *tellieBuildPushToDB;
-
+    IBOutlet NSButton *tellieConfigPushToDB;
+    
     //AMELLIE interface ------------------------------------------
     IBOutlet NSTextField *amelliePulseWidthTf;
     IBOutlet NSTextField *amelliePulseFreqTf;
@@ -182,17 +185,20 @@
 -(NSString*)validateTellieFibreDelay:(NSString *)currentText;
 -(NSString*)validateTellieTriggerDelay:(NSString *)currentText;
 -(NSString*)validateTellieNoPulses:(NSString *)currentText;
+-(NSString*)validateTellieSubrunDelay:(NSString *)currentText;
 
 // Some extra's
 -(void)tellieRunFinished:(NSNotification *)aNote;
 -(void)initialiseTellie;
 -(void)displayAmellieNodes:(id)sender;
 -(void)updateAmellieChannel;
+-(void)tellieExpertInitPCASettings;
 
 
 //Build Custom sequence
 -(IBAction)tellieBuildValidateAction:(id)sender;
 -(IBAction)tellieBuildPushToDBAction:(id)sender;
+-(IBAction)tellieConfigPushToDBAction:(id)sender;
 
 //Amellie tab functions -----------------------------
 - (IBAction)amellieValidateSettingsAction:(id)sender;

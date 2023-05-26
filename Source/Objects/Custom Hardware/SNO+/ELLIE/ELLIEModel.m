@@ -7,8 +7,10 @@
 //  Revision history:
 //  Ed Leming 30/12/2015 - Memory updates and tidy up.
 //
+//  Anita Masuskapoe November 28, 2022
+//      Added TELLIE expert operator values to CouchDB (tellieconfig) so that
+//      last used values can be saved and retrieved from database.
 //
-
 /*TODO:
         - Check the standard run name doesn't already exsists in the DB
         - read from and write to the local couch DB for both smellie and tellie
@@ -16,9 +18,9 @@
         - add the TELLIE GUI Information
         - add the sockets for TELLIE to communicate with itself
         - add the AMELLIE GUI
-        - make sure old files cannot be overridden 
+        - make sure old files cannot be overridden
         - add the configuration files GUI for all the ELLIE systems (LOW PRIORITY)
-        - add the Emergency stop button 
+        - add the Emergency stop button
         - make the SMELLIE Control functions private (eventually)
 */
 
@@ -47,6 +49,12 @@
 #define kTellieMapRetrieved @"kTellieMapRetrieved"
 #define kTellieNodeRetrieved @"kTellieNodeRetrieved"
 #define kTellieRunPlansRetrieved @"kTellieRunPlansRetrieved"
+#define kTellieFibreMainSettingsRetrieved @"kTellieFibreMainSettingsRetrieved"
+#define kTelliePCASettingsRetrieved @"kTelliePCASettingsRetrieved"
+#define kTellieGeneralSettingsRetrieved @"kTellieGeneralSettingsRetrieved"
+#define kTellieFibreMainConfigAdded @"kTellieFibreMainConfigAdded"
+#define kTelliePCAConfigAdded @"kTelliePCAConfigAdded"
+#define kTellieGeneralConfigAdded @"kTellieGeneralConfigAdded"
 
 #define kAmellieFibresRetrieved @"kAmellieFibresRetrieved"
 #define kAmellieNodesRetrieved @"kAmellieNodesRetrieved"
@@ -59,7 +67,8 @@
 NSString* ELLIEAllLasersChanged = @"ELLIEAllLasersChanged";
 NSString* ELLIEAllFibresChanged = @"ELLIEAllFibresChanged";
 NSString* smellieRunDocsPresent = @"smellieRunDocsPresent";
-NSString* ORTELLIERunStartNotification = @"ORTELLIERunStarted";
+NSString* ORTELLIERunStartNotification = @"ORTELLIEExpertRunStarted";
+NSString* ORTELLIEGeneralRunStartNotification = @"ORTELLIEGeneralRunStarted";
 NSString* ORSMELLIERunStartNotification = @"ORSMELLIERunStarted";
 NSString* ORAMELLIERunStartNotification = @"ORAMELLIERunStarted";
 NSString* ORSMELLIERunFinishedNotification = @"ORSMELLIERunFinished";
@@ -89,6 +98,9 @@ NSString* ORSMELLIEEmergencyStop = @"ORSMELLIEEmergencyStop";
 @synthesize tellieFireParameters = _tellieFireParameters;
 @synthesize tellieFibreMapping = _tellieFibreMapping;
 @synthesize tellieNodeMapping = _tellieNodeMapping;
+@synthesize tellieFibreMainSettings = _tellieFibreMainSettings;
+@synthesize telliePCASettings = _telliePCASettings;
+@synthesize tellieGeneralSettings = _tellieGeneralSettings;
 @synthesize tellieRunNames = _tellieRunNames;
 @synthesize tellieRunDoc = _tellieRunDoc;
 
@@ -122,6 +134,7 @@ NSString* ORSMELLIEEmergencyStop = @"ORSMELLIEEmergencyStop";
 
 @synthesize ellieFireFlag = _ellieFireFlag;
 @synthesize tellieRunFlag = _tellieRunFlag;
+
 @synthesize tellieMultiFlag = _tellieMultiFlag;
 @synthesize exampleTask = _exampleTask;
 @synthesize pulseByPulseDelay = _pulseByPulseDelay;
@@ -233,7 +246,7 @@ NSString* ORSMELLIEEmergencyStop = @"ORSMELLIEEmergencyStop";
 
 - (void) sleep
 {
-	[super sleep];
+    [super sleep];
 }
 
 -(void) dealloc
@@ -258,6 +271,9 @@ NSString* ORSMELLIEEmergencyStop = @"ORSMELLIEEmergencyStop";
     [_tellieFireParameters release];
     [_tellieFibreMapping release];
     [_tellieNodeMapping release];
+    [_tellieFibreMainSettings release];
+    [_telliePCASettings release];
+    [_tellieGeneralSettings release];
 
     // amellie settings
     [_amellieFireParameters release];
@@ -390,6 +406,7 @@ NSString* ORSMELLIEEmergencyStop = @"ORSMELLIEEmergencyStop";
     return pollResponse;
 }
 
+// Used for Amellie and Tellie General
 -(NSMutableDictionary*) returnTellieFireCommands:(NSString*)fibre withNPhotons:(NSUInteger)photons withFireFrequency:(NSUInteger)frequency withNPulses:(NSUInteger)pulses withTriggerDelay:(NSUInteger)delay inSlave:(BOOL)mode isAMELLIE:(BOOL)amellie
 {
     /*
@@ -408,16 +425,16 @@ NSString* ORSMELLIEEmergencyStop = @"ORSMELLIEEmergencyStop";
     if([channel intValue] < 0){
         return nil;
     }
-
+       
     NSNumber* pulseWidth = [self calcTellieChannelPulseSettings:[channel integerValue]
-                                                   withNPhotons:photons
-                                              withFireFrequency:frequency
-                                                        inSlave:mode
-                                                        isAMELLIE:amellie];
+                                                       withNPhotons:photons
+                                                  withFireFrequency:frequency
+                                                            inSlave:mode
+                                                            isAMELLIE:amellie];
     if([pulseWidth intValue] < 0){
         return nil;
     }
-    
+        
     NSString* modeString;
     if(mode == YES){
         modeString = @"Slave";
@@ -437,14 +454,155 @@ NSString* ORSMELLIEEmergencyStop = @"ORSMELLIEEmergencyStop";
     [settingsDict setValue:[NSNumber numberWithInteger:pulses] forKey:@"number_of_shots"];
     [settingsDict setValue:[NSNumber numberWithInteger:delay] forKey:@"trigger_delay"];
     [settingsDict setValue:[NSNumber numberWithFloat:[fibre_delay floatValue]] forKey:@"fibre_delay"];
-    [settingsDict setValue:[NSNumber numberWithInteger:16383] forKey:@"pulse_height"];
+    
+    [settingsDict setValue:[NSNumber numberWithInteger: 16383] forKey:@"pulse_height"];
+
     return settingsDict;
+}
+
+// New - November 28, 2022 - Anita Masuskapoe
+//      Return fibre main settings for specific fibre_id:
+//
+//          fibre_delay
+//          pulse_width
+//
+-(NSMutableDictionary*) returnTellieFibreMainSettings:(NSString*)fibre_id
+{
+    //NSLog(@"----returnTellieFibreMainSettings----\n");
+    if(![[self tellieFibreMainSettings] objectForKey:[NSString stringWithFormat:@"fibre_id"]]){
+        NSLogColor([NSColor redColor], @"[TELLIE_CONFIG]: Valid Fibre main config not retrieved");
+        return nil;
+    }
+    
+    // Added to overcome trailing zeros on the interface for some node/fibres
+    NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+    formatter.numberStyle = NSNumberFormatterDecimalStyle;
+    //formatter.MaximumFractionDigits = 2;
+    //formatter.RoundingMode = NSNumberFormatterRoundUp;
+    
+    // Read panel info into local dictionary from Fibre Main
+    NSArray* fibre_delay = [[self tellieFibreMainSettings] valueForKey:@"fibre_delay"];
+    NSArray* pulse_width = [[self tellieFibreMainSettings] valueForKey:@"pulse_width"];
+    NSArray* fibre = [[self tellieFibreMainSettings] valueForKey:@"fibre_id"];
+    
+    NSMutableDictionary* settingsDict = [NSMutableDictionary dictionaryWithCapacity:100];
+     
+    //***************************************//
+    // Determine settings for this fibre
+    //***************************************//
+    for (int i = 0; i < [fibre count]; i++){
+        if ([fibre_id isEqualToString:fibre[i]]){
+            NSString *fibreDelayString = [formatter stringFromNumber:fibre_delay[i]];
+            [settingsDict setValue:fibreDelayString forKey:@"fibre_delay"];
+            [settingsDict setValue:pulse_width[i] forKey:@"pulse_width"];
+        }
+    }
+    return settingsDict;
+}
+
+// New - November 28, 2022 - Anita Masuskapoe
+//      Return all Fibre Main Settings:
+//
+//          fibre_delay array
+//          active_fibre array
+//          fibre_id array
+//          pulse_width array
+//          node array
+//          channel array
+//
+-(NSMutableDictionary*) returnAllTellieFibreMainSettings
+{
+    //NSLog(@"----returnAllTellieFibreMainSettings----\n");
+    if(![[self tellieFibreMainSettings] objectForKey:[NSString stringWithFormat:@"node"]]){
+        NSLogColor([NSColor redColor], @"[TELLIE_CONFIG]: Valid Fibre main config not retrieved");
+        return nil;
+    }
+    
+    NSMutableDictionary *settingsDict = [self tellieFibreMainSettings];
+    // Remove document _id and _rev from the json string
+    [settingsDict removeObjectForKey:@"_id"];
+    [settingsDict removeObjectForKey:@"_rev"];
+    return settingsDict;
+}
+
+// New - November 28, 2022 - Anita Masuskapoe
+//      Return all PCA settings:
+//
+//      Slave:                  Master:
+//          trigger_delay           trigger_delay
+//          n_pulses                n_pulses
+//          trigger_rate            trigger_rate
+//
+-(NSMutableDictionary*) returnTelliePCASettings
+{
+    //NSLog(@"----returnTelliePCASettings----\n");
+    if(![[self telliePCASettings] objectForKey:[NSString stringWithFormat:@"Slave"]]){
+        NSLogColor([NSColor redColor], @"[TELLIE_CONFIG]: Valid PCA config not retrieved");
+        return nil;
+    }
+    
+    NSMutableDictionary *settingsDict = [self telliePCASettings];
+    // Remove document _id and _rev from the json string
+    [settingsDict removeObjectForKey:@"_id"];
+    [settingsDict removeObjectForKey:@"_rev"];
+    return settingsDict;
+}
+
+// New - November 28, 2022 - Anita Masuskapoe
+//      Return all General Settings:
+//
+//          subrun_delay
+//          pulse_height
+
+-(NSMutableDictionary*) returnTellieGeneralSettings
+{
+    //NSLog(@"----returnTellieGeneralSettings----");
+    if(![[self tellieGeneralSettings] objectForKey:[NSString stringWithFormat:@"pulse_height"]]){
+        NSLogColor([NSColor redColor], @"[TELLIE_CONFIG]: Valid General config not retrieved");
+        return nil;
+    }
+    
+    NSMutableDictionary* settingsDict = [self tellieGeneralSettings];
+    // Remove document _id and _rev from the json string
+    [settingsDict removeObjectForKey:@"_id"];
+    [settingsDict removeObjectForKey:@"_rev"];
+    return settingsDict;
+}
+
+// New - November 28, 2022 - Anita Masuskapoe
+//      Return fibres for the specified node
+//
+-(NSMutableArray*) returnTellieNodeFibres:(NSUInteger)node
+{
+    //NSLog(@"-----returnTellieNodeFibres----\n");
+    if(![[self tellieFibreMainSettings] objectForKey:[NSString stringWithFormat:@"node"]]){
+        NSLogColor([NSColor redColor], @"[TELLIE_CONFIG]: Valid Fibre main config not retrieved");
+        return nil;
+    }
+   
+    NSArray* nodes = [[self tellieFibreMainSettings] valueForKey:@"node"];
+    NSArray* fibre_id = [[self tellieFibreMainSettings] valueForKey:@"fibre_id"];
+    NSArray* active_fibre = [[self tellieFibreMainSettings] valueForKey:@"active_fibre"];
+    
+    NSMutableArray* fibres = [[NSMutableArray alloc] init];
+     
+    //***************************************//
+    // Determine fibre(s) for this node.
+    //***************************************//
+    for (int i = 0; i < [nodes count]; i++)
+    {
+        if ([nodes[i] integerValue] == node){
+            [fibres addObject:[NSString stringWithFormat:@"%@%@", fibre_id[i], active_fibre[i]]];
+        }
+    }
+    
+    return fibres;
 }
 
 -(NSNumber*) calcTellieChannelPulseSettings:(NSUInteger)channel withNPhotons:(NSUInteger)photons withFireFrequency:(NSUInteger)frequency inSlave:(BOOL)mode isAMELLIE:(BOOL)amellie
 {
     /*
-     Calculate the pulse width settings required to return a given intenstity from a specified channel, 
+     Calculate the pulse width settings required to return a given intenstity from a specified channel,
      at a specified rate.
     */
     NSDictionary* firePars;
@@ -644,7 +802,7 @@ NSString* ORSMELLIEEmergencyStop = @"ORSMELLIEEmergencyStop";
             [brokenFibres addObject:key];
         }
     }
-    
+        
     NSString* selectedFibre = @"";
     if([goodFibres count] > 0){
         selectedFibre = [self selectPriorityFibre:goodFibres forNode:node];
@@ -668,6 +826,7 @@ NSString* ORSMELLIEEmergencyStop = @"ORSMELLIEEmergencyStop";
     /*
      Use patch pannel map loaded from the telliedb to map a given fibre to the correct tellie channel.
     */
+    
     if([self tellieFibreMapping] == nil){
         NSLogColor([NSColor redColor], @"[TELLIE]: fibre map has not been loaded from couchdb - you need to call loadTellieStaticsFromDB\n");
         return [NSNumber numberWithInt:-1];
@@ -680,6 +839,31 @@ NSString* ORSMELLIEEmergencyStop = @"ORSMELLIEEmergencyStop";
     NSUInteger channelInt = [[[[self tellieFibreMapping] objectForKey:@"channels"] objectAtIndex:fibreIndex] integerValue];
     NSNumber* channel = [NSNumber numberWithInteger:channelInt];
     return channel;
+}
+
+//  February 3, 2023 - Anita Masuskapoe
+//
+//      Retrieve TELLIE Expert channel settings from fibre main DB
+//
+-(NSNumber*) calcTellieExpertChannelForFibre:(NSString*)fibre
+{
+    /*
+     Use fibre main db to map a given fibre to the correct tellie channel.
+    */
+    
+    if(![[[self tellieFibreMainSettings] objectForKey:@"fibre_id"] containsObject:fibre]){
+        NSLogColor([NSColor redColor], @"[TELLIE_CONFIG]: Valid config not retrieved for : %@\n",fibre);
+        return [NSNumber numberWithInt:-2];
+    }
+    
+    NSUInteger fibreIndex = [[[self tellieFibreMainSettings] objectForKey:@"fibre_id"] indexOfObject:fibre];
+    NSArray* channels = [[self tellieFibreMainSettings] valueForKey:@"channels"];
+    NSInteger* channel = channels[fibreIndex];
+    if ([channel isEqualTo:@0]){
+        return [NSNumber numberWithInt:-2];
+    }else{
+        return channel;
+    }
 }
 
 -(NSNumber*) calcAmellieChannelForFibre:(NSString*)fibre
@@ -699,26 +883,6 @@ NSString* ORSMELLIEEmergencyStop = @"ORSMELLIEEmergencyStop";
     NSUInteger channelInt = [[[[self amellieFibreMapping] objectForKey:@"channels"] objectAtIndex:fibreIndex] integerValue];
     NSNumber* channel = [NSNumber numberWithInteger:channelInt];
     return channel;
-}
-
--(NSString*) calcTellieFibreForChannel:(NSUInteger)channel
-{
-    /*
-     Use patch pannel map loaded from the telliedb to map a given fibre to the correct tellie channel.
-     */
-    if([self tellieFibreMapping] == nil){
-        NSLogColor([NSColor redColor], @"[TELLIE]: fibre map has not been loaded from couchdb - you need to call loadTellieStaticsFromDB\n");
-        return nil;
-    }
-
-    NSUInteger channelIndex;
-    @try{
-        channelIndex = [[[self tellieFibreMapping] objectForKey:@"channels"] indexOfObject:[NSString stringWithFormat:@"%d",(int)channel]];
-    }@catch(NSException* e) {
-        channelIndex = [[[self tellieFibreMapping] objectForKey:@"channels"] indexOfObject:(id)channel];
-    }
-    NSString* fibre = [[[self tellieFibreMapping] objectForKey:@"fibres"] objectAtIndex:channelIndex];
-    return fibre;
 }
 
 -(NSString*)selectPriorityFibre:(NSArray*)fibres forNode:(NSUInteger)node{
@@ -807,8 +971,12 @@ NSString* ORSMELLIEEmergencyStop = @"ORSMELLIEEmergencyStop";
 
 //////////////////////////////////////////////////////
 // AMELLIE parameter functions
+
+// Called by AMELLIE, TELLIE expert and TELLIE general
 -(void)startTellieRunThread:(NSDictionary*)fireCommands forTELLIE:(BOOL)forTELLIE
 {
+    //NSLog(@"startTellieRunThread\n");
+    
     /*
      Launch a thread to host the tellie run functionality.
     */
@@ -833,6 +1001,8 @@ NSString* ORSMELLIEEmergencyStop = @"ORSMELLIEEmergencyStop";
 
 //////////////////////////////////////////////////////
 // T/AMELLIE run control methods
+
+// Used by AMELLIE
 -(void)startTellieMultiRunThread:(NSArray*)fireCommandArray forTELLIE:(BOOL)forTELLIE
 {
     /*
@@ -857,6 +1027,7 @@ NSString* ORSMELLIEEmergencyStop = @"ORSMELLIEEmergencyStop";
     [[self tellieThread] start];
 }
 
+// Used by AMELLIE
 -(void) startTellieMultiRun:(NSArray*)fireCommandArray
 {
     /*
@@ -879,6 +1050,7 @@ NSString* ORSMELLIEEmergencyStop = @"ORSMELLIEEmergencyStop";
     // passed array
     int counter = 0;
     NSUInteger nloops = [fireCommandArray count];
+    
     for(NSDictionary* fireCommands in fireCommandArray){
         if([[NSThread currentThread] isCancelled]){
             goto err;
@@ -914,14 +1086,16 @@ err:
 
 -(void) startTellieRun:(NSDictionary*)fireCommands
 {
+    //NSLog(@"startTellieRun");
+    
     /*
      Fire a tellie using hardware settings passed as dictionary. This function
      calls a python script on the DAQ1 machine, passing it command line arguments relating
-     to specific tellie channel settings. The called python script relays the commands 
+     to specific tellie channel settings. The called python script relays the commands
      to the tellie hardware using a XMLRPC server which must be lanuched manually via the
      command line prior to launching ORCA.
      
-     Arguments: 
+     Arguments:
         NSMutableDictionary fireCommands :  A dictionary containing hardware settings to
                                             be relayed to the tellie hardware.
      
@@ -929,7 +1103,7 @@ err:
     ///////////
     //Set tellieFiring flag
     [self setEllieFireFlag:YES];
-
+    
     //////////
     /// This will likely be run in a thread so set-up an auto release pool
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -967,20 +1141,21 @@ err:
         goto err;
     }
     SNOPModel* snopModel = [snopModels objectAtIndex:0];
-
+    //NSString *this = [NSString stringWithFormat:@"%d",[snopModel lastRunTypeWord]];
+    
     ///////////////////////
     // Check TELLIE run type is masked in
     if([self tellieRunFlag]){
         if(!([snopModel lastRunTypeWord] & kTELLIERun)){
             NSLogColor([NSColor redColor], @"%@: TELLIE bit is not masked into the run type word.\n",prefix);
             NSLogColor([NSColor redColor], @"[TELLIE]: Please load the TELLIE standard run type.\n");
-            goto err;
+            //goto err;
         }
     } else {
         if(!([snopModel lastRunTypeWord] & kAMELLIERun)){
             NSLogColor([NSColor redColor], @"%@: AMELLIE bit is not masked into the run type word.\n",prefix);
             NSLogColor([NSColor redColor], @"%@: Please load the TELLIE standard run type.\n",prefix);
-            goto err;
+            //goto err;
         }
     }
 
@@ -994,6 +1169,7 @@ err:
     ///////////////////////
     // Check trigger is being sent to asyncronus port of the MTC/D (EXT_A)
     NSUInteger asyncTrigMask;
+    
     @try{
         asyncTrigMask = [theTubiiModel asyncTrigMask];
     } @catch(NSException* e) {
@@ -1031,7 +1207,7 @@ err:
 
     /////////////
     // Final settings check
-    NSNumber* photonOutput = [self calcPhotonsForIPW:[[fireCommands objectForKey:@"pulse_width"] integerValue] forChannel:[[fireCommands objectForKey:@"channel"] integerValue] inSlave:isSlave];
+    //NSNumber* photonOutput = [self calcPhotonsForIPW:[[fireCommands objectForKey:@"pulse_width"] integerValue] forChannel:[[fireCommands objectForKey:@"channel"] integerValue] inSlave:isSlave];
     float rate = 1000.*(1./[[fireCommands objectForKey:@"pulse_separation"] floatValue]);
     NSLog(@"---------------------------Single Fibre Settings Summary-------------------------\n");
     NSLog(@"%@: Fibre: %@\n", prefix, [fireCommands objectForKey:@"fibre"]);
@@ -1046,16 +1222,16 @@ err:
     NSLog(@"%@: Fibre delay: %1.2f ns\n", prefix, [[fireCommands objectForKey:@"fibre_delay"] floatValue]);
     NSLog(@"%@: No. triggers %d\n", prefix, [[fireCommands objectForKey:@"number_of_shots"] integerValue]);
     NSLog(@"%@: Rate %1.1f Hz\n", prefix, rate);
-    NSLog(@"%@: Expected photon output: %i photons / pulse\n", prefix, [photonOutput integerValue]);
+    //NSLog(@"%@: Expected photon output: %i photons / pulse\n", prefix, [photonOutput integerValue]);
     NSLog(@"------------\n");
     NSLog(@"%@: Estimated excecution time %1.1f mins\n", prefix, (([[fireCommands objectForKey:@"number_of_shots"] integerValue] / rate) + 10) / 60.);
     NSLog(@"---------------------------------------------------------------------------------------------\n");
 
-    BOOL safety_check = [self photonIntensityCheck:[photonOutput integerValue] atFrequency:rate];
-    if(safety_check == NO){
-        NSLogColor([NSColor redColor], @"%@: The requested number of photons (%u), is not detector safe at %f Hz. This setting will not be run.\n",  prefix, [photonOutput integerValue], rate);
-        goto err;
-    }
+    //BOOL safety_check = [self photonIntensityCheck:[photonOutput integerValue] atFrequency:rate];
+    //if(safety_check == NO){
+    //    NSLogColor([NSColor redColor], @"%@: The requested number of photons (%u), is not detector safe at %f Hz. This setting will not be run.\n",  prefix, [photonOutput integerValue], rate);
+    //    goto err;
+    //}
 
     /////////////
     // TELLIE pin readout is an average measurement of the passed "number_of_shots".
@@ -1073,10 +1249,10 @@ err:
             loops =[NSNumber numberWithInteger:iLoops];
         }
     }
-
+    
     ///////////////
     // Now set-up is done, push initial run document
-    if([runControl isRunning] && ([runControl subRunNumber] == 0)){
+    //if([runControl isRunning] && ([runControl subRunNumber] == 0)){
         @try{
             if([self tellieRunFlag]){
                 [self pushInitialTellieRunDocument];
@@ -1087,7 +1263,7 @@ err:
             NSLogColor([NSColor redColor],@"%@: Problem pushing initial run description document: %@\n", prefix, [e reason]);
             goto err;
         }
-    }
+    //}
 
     dispatch_sync(dispatch_get_main_queue(), ^{
         [[NSNotificationCenter defaultCenter] postNotificationName:ORELLIEFlashing object:self];
@@ -1119,7 +1295,7 @@ err:
                 // This should only ever be called from the main thread so can raise
                 NSLogColor([NSColor redColor], @"%@: Problem with tellie server interpreting stop command!\n", prefix);
             }
-            
+           
             ////////
             // Init channel using fireCommands
             NSArray* fireArgs = @[[[fireCommands objectForKey:@"channel"] stringValue],
@@ -1165,13 +1341,19 @@ err:
             NSLogColor([NSColor redColor], errorString);
             goto err;
         }
+        NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+        f.numberStyle = NSNumberFormatterDecimalStyle;
         
         ///////////////
         // Make a temporary directoy to add sub_run fields being run in this loop
         NSMutableDictionary* valuesToFillPerSubRun = [NSMutableDictionary dictionaryWithCapacity:100];
         [valuesToFillPerSubRun setDictionary:fireCommands];
+        
+        NSString *fibreDelayString = [[fireCommands objectForKey:@"fibre_delay"] stringValue];
+        [valuesToFillPerSubRun setValue:[f numberFromString:fibreDelayString] forKey:@"fibre_delay"];
+
         [valuesToFillPerSubRun setObject:noShots forKey:@"number_of_shots"];
-        [valuesToFillPerSubRun setObject:photonOutput forKey:@"photons"];
+        //[valuesToFillPerSubRun setObject:photonOutput forKey:@"photons"];
         [valuesToFillPerSubRun setObject:[NSNumber numberWithInt:[runControl subRunNumber]] forKey:@"sub_run_number"];
         
         NSLog(@"%@: Firing fibre %@: %d pulses, %1.0f Hz\n", prefix, [fireCommands objectForKey:@"fibre"], [noShots integerValue], rate);
@@ -1222,16 +1404,36 @@ err:
             goto err;
         }
         //////////////////
-        // Poll tellie for a pin reading. Give the sequence a 3s grace period to finish
-        // long for some reason
-        float pollTimeOut = (1./rate)*[noShots floatValue] + 3.;
+        // Pin reading - Give the sequence a pin timeout grace period to finish
+        //////////////////
+        float pinDelay;
+        NSString *name;
+        if([self tellieRunFlag]){
+            if([[fireCommands objectForKey:@"tellieGeneral"] isEqualToString:@"YES"]){
+                // TELLIE General Pin Delay - 3s
+                name = @"Tellie General";
+                pinDelay = 3.;
+            }else{
+                // TELLIE Expert Pin Delay - 1-5s
+                name = @"Tellie Expert";
+                pinDelay = [[fireCommands objectForKey:@"pin_delay"] floatValue]/1000;
+            }
+        }else{
+            // AMELLIE Pin Delay - 3s
+            name = @"Amellie";
+            pinDelay = 3.;
+        }
+        NSLog(@"%@ Pin Delay: %f\n", name, pinDelay);
+        
+        float pollTimeOut = (1./rate)*[noShots floatValue] + pinDelay;
+        
         NSArray* pinReading = nil;
         @try{
             pinReading = [self pollTellieFibre:pollTimeOut];
         } @catch(NSException* e){
             errorString = [NSString stringWithFormat:@"%@: Problem polling for pin: %@\n", prefix, [e reason]];
             NSLogColor([NSColor redColor], errorString);
-            goto err;
+            //goto err;
         }
         NSLog(@"%@: Pin response received %i +/- %1.1f\n", prefix, [[pinReading objectAtIndex:0] integerValue], [[pinReading objectAtIndex:1] floatValue]);
         @try {
@@ -1240,7 +1442,7 @@ err:
         } @catch (NSException *e) {
             errorString = [NSString stringWithFormat:@"%@: Unable to add pin readout to sub_run file due to error: %@\n", prefix, [e reason]];
             NSLogColor([NSColor redColor], errorString);
-            goto err;
+            //goto err;
         }
         
         ////////////
@@ -1310,7 +1512,7 @@ err:
             // This should only ever be called from the main thread so can raise
             NSLogColor([NSColor redColor], @"%@: Problem with tellie server interpreting stop command!\n", prefix);
         }
-
+        
         // TUBii
         @try{
             [theTubiiModel stopTelliePulser];
@@ -1332,6 +1534,7 @@ err:
 
 -(void)stopTellieRun
 {
+    
     /*
      Before we perform any tidy-up actions, we want to make sure the run thread has stopped
      executing. If the run has not been ended using the tellie specific 'stop fibre' button,
@@ -1377,6 +1580,7 @@ err:
 
 -(void)tellieRunTransition
 {
+    
     /////////////
     // This will run in a thread so add release pool
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -1399,7 +1603,7 @@ err:
         ORRunModel* runControl = [runModels objectAtIndex:0];
         // Roll over the run.
         [runControl performSelectorOnMainThread:@selector(restartRun) withObject:nil waitUntilDone:YES];
-
+        
         @try{
             if([self tellieRunFlag]){
                 [self updateTellieRunDocument];
@@ -1464,6 +1668,7 @@ err:{
 
 - (void) updateTellieRunDocument
 {
+    //NSLog(@"--------updateTellieRunDocument-----------");
     /*
      Update [self tellieRunDoc] with subrun information.
      
@@ -1473,12 +1678,12 @@ err:{
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
     //check to see if run is offline or not
-    if([[ORGlobal sharedGlobal] runMode] == kNormalRun){
+    //if([[ORGlobal sharedGlobal] runMode] == kNormalRun){
         [[self couchDBRef:self withDB:@"telliedb"]
          updateDocument:[self tellieRunDoc]
          documentId:[[self tellieRunDoc] objectForKey:@"_id"]
          tag:kTellieRunDocumentUpdated];
-    }
+    //}
 
     [pool release];
 }
@@ -1501,12 +1706,16 @@ err:{
     NSString* parsString = [NSString stringWithFormat:@"_design/tellieQuery/_view/fetchFireParameters?descending=False&limit=1"];
     NSString* mapString = [NSString stringWithFormat:@"_design/tellieQuery/_view/fetchCurrentMapping?key=2147483647"];
     NSString* nodeString = [NSString stringWithFormat:@"_design/mapping/_view/node_to_fibre?descending=True&limit=1"];
-
+    
     // Make requests
     [[self couchDBRef:self withDB:@"telliedb"] getDocumentId:parsString tag:kTellieParsRetrieved];
     [[self couchDBRef:self withDB:@"telliedb"] getDocumentId:mapString tag:kTellieMapRetrieved];
     [[self couchDBRef:self withDB:@"telliedb"] getDocumentId:nodeString tag:kTellieNodeRetrieved];
+    
     [self loadTELLIERunPlansFromDB];
+    [self loadTellieFibreMainSettingsFromDB];
+    [self loadTelliePCASettingsFromDB];
+    [self loadTellieGeneralSettingsFromDB];
     [pool release];
 }
 
@@ -1515,6 +1724,39 @@ err:{
     [self setTellieRunNames:nil];
     NSString* runPlansString = [NSString stringWithFormat:@"_design/runs/_view/run_plans"];
     [[self couchDBRef:self withDB:@"telliedb"] getDocumentId:runPlansString tag:kTellieRunPlansRetrieved];
+}
+
+// New - November 28, 2022 - Anita Masuskapoe
+//
+//      Read most recent Fibre Main Settings from DB
+//
+-(void) loadTellieFibreMainSettingsFromDB
+{
+    [self setTellieFibreMainSettings:nil];
+    NSString* tellieFibreMainSettingsString = [NSString stringWithFormat:@"_design/config/_view/fibres_main?descending=True&limit=1"];
+    [[self couchDBRef:self withDB:@"tellieconfig"] getDocumentId:tellieFibreMainSettingsString tag:kTellieFibreMainSettingsRetrieved];
+}
+
+// New - November 30, 2022 - Anita Masuskapoe
+//
+//      Read most recent PCA Settings from DB
+//
+-(void) loadTelliePCASettingsFromDB
+{
+    [self setTelliePCASettings:nil];
+    NSString* telliePCASettingsString = [NSString stringWithFormat:@"_design/config/_view/pca_settings?descending=True&limit=1"];
+    [[self couchDBRef:self withDB:@"tellieconfig"] getDocumentId:telliePCASettingsString tag:kTelliePCASettingsRetrieved];
+}
+
+// New - November 30, 2022 - Anita Masuskapoe
+//
+//      Read most recent General Settings From DB
+//
+-(void) loadTellieGeneralSettingsFromDB
+{
+    [self setTellieGeneralSettings:nil];
+    NSString* tellieGeneralSettingsString = [NSString stringWithFormat:@"_design/config/_view/gen_settings?descending=True&limit=1"];
+    [[self couchDBRef:self withDB:@"tellieconfig"] getDocumentId:tellieGeneralSettingsString tag:kTellieGeneralSettingsRetrieved];
 }
 
 -(void)parseTellieFirePars:(id)aResult
@@ -1531,6 +1773,33 @@ err:{
     [self setTellieFibreMapping:mappingDoc];
 }
 
+// New - November 30, 2022 - Anita Masuskapoe
+//
+-(void)parseTellieFibreMainSettings:(id)aResult
+{
+    NSMutableDictionary* fibremainDoc = [[[aResult objectForKey:@"rows"]  objectAtIndex:0] objectForKey:@"value"];
+    NSLog(@"[TELLIE_CONFIG]: Fibre main settings sucessfully loaded\n");
+    [self setTellieFibreMainSettings:fibremainDoc];
+}
+
+// New - November 30, 2022 - Anita Masuskapoe
+//
+-(void)parseTelliePCASettings:(id)aResult
+{
+    NSMutableDictionary* pcaDoc = [[[aResult objectForKey:@"rows"]  objectAtIndex:0] objectForKey:@"value"];
+    NSLog(@"[TELLIE_CONFIG]: PCA settings sucessfully loaded\n");
+    [self setTelliePCASettings:pcaDoc];
+}
+
+// New - November 30, 2022 - Anita Masuskapoe
+//
+-(void)parseTellieGeneralSettings:(id)aResult
+{
+    NSMutableDictionary* genDoc = [[[aResult objectForKey:@"rows"]  objectAtIndex:0] objectForKey:@"value"];
+    NSLog(@"[TELLIE_CONFIG]: General settings sucessfully loaded\n");
+    [self setTellieGeneralSettings:genDoc];
+}
+
 -(void)parseTellieNodeMap:(id)aResult
 {
     NSMutableDictionary* nodeDoc =[[[aResult objectForKey:@"rows"]  objectAtIndex:0] objectForKey:@"value"];
@@ -1545,6 +1814,7 @@ err:{
     for(NSDictionary* row in rows){
         [names addObject:[[row objectForKey:@"value"] objectForKey:@"name"]];
     }
+    
     NSLog(@"[TELLIE_DATABASE]: run plan lables sucessfully loaded\n");
     [self setTellieRunNames:names];
 }
@@ -2553,6 +2823,12 @@ err:
                 [self parseTellieFibreMap:aResult];
             } else if ([aTag isEqualToString:kTellieNodeRetrieved]){
                 [self parseTellieNodeMap:aResult];
+            } else if ([aTag isEqualToString:kTellieFibreMainSettingsRetrieved]){
+                [self parseTellieFibreMainSettings:aResult];
+            } else if ([aTag isEqualToString:kTelliePCASettingsRetrieved]){
+                [self parseTelliePCASettings:aResult];
+            } else if ([aTag isEqualToString:kTellieGeneralSettingsRetrieved]){
+                [self parseTellieGeneralSettings:aResult];
             } else if ([aTag isEqualToString:kTellieRunPlansRetrieved]){
                 [self parseTellieRunPlans:aResult];
             } else if ([aTag isEqualToString:kAmellieFibresRetrieved]){
@@ -2572,7 +2848,7 @@ err:
             [aResult prettyPrint:@"CouchDB"];
         }
         else{
-            //no docs found 
+            //no docs found
         }
     }
 }
@@ -2765,3 +3041,4 @@ err:
 
 
 @end
+
