@@ -122,6 +122,7 @@
     NSDictionary *tellieRunFile;
     NSDictionary* tellieFireSettings;
     BOOL tellieStandardSequenceFlag;
+    BOOL tellieGeneralRunFlag;
 
     //AMELLIE
     IBOutlet NSComboBox *amellieRunFileNameField;
@@ -223,6 +224,7 @@
     IBOutlet WebView* detectorState;
 }
 @property (nonatomic) BOOL tellieStandardSequenceFlag;
+@property (nonatomic) BOOL tellieGeneralRunFlag;
 @property (nonatomic) BOOL amellieStandardSequenceFlag;
 @property (nonatomic,retain) NSDictionary *tellieFireSettings;
 @property (nonatomic,retain) NSDictionary *amellieFireSettings;
@@ -314,6 +316,7 @@
 - (IBAction)startTellieRunAction:(id)sender;
 - (IBAction) stopTellieRunAction:(id)sender;
 - (void)startTellieRunNotification:(NSNotification *)aNote;
+- (void)startTellieGeneralRunNotification:(NSNotification *)aNote;
 - (IBAction)emergencyTellieStopAction:(id)sender;
 
 //amellie functions ---------------------

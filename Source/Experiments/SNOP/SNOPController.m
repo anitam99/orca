@@ -354,6 +354,11 @@ snopGreenColor;
                      selector : @selector(startTellieRunNotification:)
                          name : ORTELLIERunStartNotification
                         object: nil];
+    
+    [notifyCenter addObserver :self
+                     selector : @selector(startTellieGeneralRunNotification:)
+                         name : ORTELLIEGeneralRunStartNotification
+                        object: nil];
 
     [notifyCenter addObserver :self
                      selector : @selector(stopTellieRunAction:)
@@ -1793,12 +1798,14 @@ snopGreenColor;
 
 -(void)startTellieRunNotification:(NSNotification *)note;
 {
+    [[note userInfo] setValue:@"NO" forKey:@"tellieGeneral"];
     [self setTellieFireSettings:[note userInfo]];
-
+    
     //////////////////
     // Get ellie model and launch a fire
     // sequence
     NSArray*  objs = [[(ORAppDelegate*)[NSApp delegate] document] collectObjectsOfClass:NSClassFromString(@"ELLIEModel")];
+    
     if (![objs count]) {
         NSLogColor([NSColor redColor], @"ELLIE model not available, add an ELLIE model to your experiment\n");
         return;
@@ -1834,9 +1841,55 @@ snopGreenColor;
     [theELLIEModel startTellieRunThread:[self tellieFireSettings] forTELLIE:YES];
 }
 
+-(void)startTellieGeneralRunNotification:(NSNotification *)note;
+{
+    [[note userInfo] setValue:@"YES" forKey:@"tellieGeneral"];
+    [self setTellieFireSettings:[note userInfo]];
+
+    //////////////////
+    // Get ellie model and launch a fire
+    // sequence
+    NSArray*  objs = [[(ORAppDelegate*)[NSApp delegate] document] collectObjectsOfClass:NSClassFromString(@"ELLIEModel")];
+    
+    if (![objs count]) {
+        NSLogColor([NSColor redColor], @"ELLIE model not available, add an ELLIE model to your experiment\n");
+        return;
+    }
+    ELLIEModel* theELLIEModel = [objs objectAtIndex:0];
+
+    //////////////////
+    // Check if a run is already ongoing
+    // If so tell the user and ignore this
+    // button press
+    if([[theELLIEModel tellieThread] isExecuting]){
+        NSLogColor([NSColor redColor], @"[TELLIE]: A tellie fire sequence is already on going. Cannot launch a new one until current sequence has finished\n");
+        return;
+    }
+
+    if(!([model runTypeWord] & kTELLIERun)){
+        ORRunAlertPanel(@"The TELLIE standard run is not loaded.",@"You must load a TELLIE standard run and start a new run before starting a fire sequence",@"OK",nil,nil);
+        return;
+    }
+
+    /////////////////////
+    // Set a flag which defines if we should
+    // roll over into maintenance or not.
+    [self setTellieStandardSequenceFlag:NO];
+
+    [tellieLoadRunFile setEnabled:NO];
+    [tellieRunFileNameField setEnabled:NO];
+    [tellieStopRunButton setEnabled:YES];
+    [tellieStartRunButton setEnabled:NO];
+
+    //////////////////////
+    // Start tellie thread
+    [theELLIEModel startTellieRunThread:[self tellieFireSettings] forTELLIE:YES];
+}
+
+
+// Not used
 -(IBAction)startTellieRunAction:(id)sender
 {
-    
     //////////////////
     // Get ellie model
     NSArray*  objs = [[(ORAppDelegate*)[NSApp delegate] document] collectObjectsOfClass:NSClassFromString(@"ELLIEModel")];
@@ -1989,8 +2042,9 @@ snopGreenColor;
 
 -(void)startAmellieRunNotification:(NSNotification *)note;
 {
+    [[note userInfo] setValue:@"NO" forKey:@"tellieGeneral"];
     [self setAmellieFireSettings:[note userInfo]];
-
+ 
     //////////////////
     // Get ellie model and launch a fire
     // sequence
