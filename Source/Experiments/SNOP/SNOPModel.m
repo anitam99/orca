@@ -2515,6 +2515,94 @@ static NSComparisonResult compareXL3s(ORXL3Model *xl3_1, ORXL3Model *xl3_2, void
     return lastStandardRunVersion;
 }
 
+- (NSString*) SNOPHeartbeat
+{
+    NSString *hb = @"ok";
+    return hb;
+}
+
+- (NSString*) roboGetNominalV:(NSString*) crateNum
+{
+    NSArray* xl3s = [[(ORAppDelegate*)[NSApp delegate] document] collectObjectsOfClass:NSClassFromString(@"ORXL3Model")];
+    NSString* crateString;
+    NSString* value = @"na";
+    NSLog(@"%@", crateNum);
+    
+    //loop through all xl3 instances in Orca
+    for (id xl3 in xl3s) {
+        crateString = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 crateNumber]];
+        
+        if (([xl3 crateNumber] == 16) && ([[crateNum uppercaseString] isEqualToString:@"16B"])){
+            value = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvNominalVoltageB]];
+            break;
+        }
+        else if (([xl3 crateNumber] >= 0) && ([xl3 crateNumber] <= 18)){
+            NSString *val = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvNominalVoltageA]];
+                    
+            if ([crateString isEqualToString:crateNum]) {
+                value = val;
+                break;
+            }
+        }
+    }
+    return value;
+}
+
+- (NSString*) roboGetReadV:(NSString*) crateNum
+{
+    NSArray* xl3s = [[(ORAppDelegate*)[NSApp delegate] document] collectObjectsOfClass:NSClassFromString(@"ORXL3Model")];
+    NSString* crateString;
+    NSString* value = @"na";
+    NSLog(@"%@", crateNum);
+    
+    //loop through all xl3 instances in Orca
+    for (id xl3 in xl3s) {
+        crateString = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 crateNumber]];
+        
+        if (([xl3 crateNumber] == 16) && ([[crateNum uppercaseString] isEqualToString:@"16B"])){
+            value = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvBVoltageReadValue]];
+            break;
+        }
+        else if (([xl3 crateNumber] >= 0) && ([xl3 crateNumber] <= 18)){
+            NSString *val = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvAVoltageReadValue]];
+            
+            if ([crateString isEqualToString:crateNum]) {
+                value = val;
+                break;
+            }
+        }
+    }
+    return value;
+}
+
+- (NSString*) roboGetNominalC:(NSString*) crateNum
+{
+    NSArray* xl3s = [[(ORAppDelegate*)[NSApp delegate] document] collectObjectsOfClass:NSClassFromString(@"ORXL3Model")];
+    NSString* crateString;
+    NSString* value = @"na";
+    NSLog(@"%@", crateNum);
+    
+    //loop through all xl3 instances in Orca
+    for (id xl3 in xl3s) {
+        crateString = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 crateNumber]];
+        
+        if (([xl3 crateNumber] == 16) && ([[crateNum uppercaseString] isEqualToString:@"16B"])){
+            value = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvBCurrentReadValue]];
+            break;
+        }
+        else if (([xl3 crateNumber] >= 0) && ([xl3 crateNumber] <= 18)){
+            NSString *val = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvBCurrentReadValue]];
+            
+            if ([crateString isEqualToString:crateNum]) {
+                value = val;
+                break;
+            }
+        }
+    }
+    return value;
+}
+
+
 - (void) setLastStandardRunVersion:(NSString *)aValue
 {
     [lastStandardRunVersion autorelease];//MAH -- strings should be handled like this
