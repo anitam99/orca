@@ -2461,7 +2461,15 @@ static NSComparisonResult compareXL3s(ORXL3Model *xl3_1, ORXL3Model *xl3_2, void
 
 - (void) roboSetRunTypeWord:(uint32_t)aValue
 {
-    runTypeWord = aValue;
+    uint32_t currentWord = runTypeWord;
+    
+    // Combine the 21 LSB of the current value and the 11 MSB of the new set value
+    // Only changes the 11 MSB
+    uint32_t currentWordFirst21Bits = currentWord & 0x1FFFFF;
+    uint32_t aValue11MSB = ((aValue >> 21) & 0x7FF) << 21;
+    uint32_t combinedValue = (currentWordFirst21Bits) | (aValue11MSB);
+    
+    runTypeWord = combinedValue;
     [[NSNotificationCenter defaultCenter] postNotificationName:ORROBOSetRunTypeWord object: self];
 }
 

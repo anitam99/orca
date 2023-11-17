@@ -2182,10 +2182,6 @@ snopGreenColor;
 {
     //NSLog(@"In roboSetRunType----");
     uint32_t currentRunMask = [model runTypeWord];
-    for(int i=0; i<21; i++){
-        currentRunMask &= ~(1L<<i);
-    }
-    //NSLog(@"RunType--%u\n", currentRunMask);
     [runControl setRunType:currentRunMask];
 }
 
