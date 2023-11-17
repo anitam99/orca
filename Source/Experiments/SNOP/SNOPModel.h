@@ -193,6 +193,7 @@ BOOL isNotRunningOrIsInMaintenance(void);
 - (void)roboResyncRun;
 - (void)roboStopRun;
 - (void)roboSetStandardRunType;
+- (void)roboSetRunTypeWord;
 - (void)roboRampDownCrate:(int)crateid;
 
 - (id) init;
@@ -375,3 +376,6 @@ extern NSString* ORRoutineChangedNotification;
 extern NSString* ORROBOStartRunNotification;
 extern NSString* ORROBOResyncRunNotification;
 extern NSString* ORROBOStopRunNotification;
+extern NSString* ORROBOSetStandardRun;
+extern NSString* ORROBOSetRunTypeWord;
+

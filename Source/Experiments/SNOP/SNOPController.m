@@ -619,9 +619,15 @@ snopGreenColor;
     
     [notifyCenter addObserver: self
                      selector: @selector(loadStandardRun:withVersion:)
-                         name: @"roboSetStandardRun"
+                         name: ORROBOSetStandardRun
                        object: nil];
+    
+    [notifyCenter addObserver:self
+                     selector:@selector(roboSetRunType:)
+                         name:ORROBOSetRunTypeWord
+                       object:nil];
 }
+
 
 - (void) updateWindow
 {
@@ -836,6 +842,7 @@ snopGreenColor;
     [self endEditing];
     [model stopRun];
 }
+
 
 - (void) runStatusChanged:(NSNotification*)aNotification
 {
@@ -2138,7 +2145,6 @@ snopGreenColor;
     [amellieStopRunButton setEnabled:YES];
 }
 
-
 - (IBAction) runsLockAction:(id)sender
 {
     [gSecurity tryToSetLock:ORSNOPRunsLockNotification to:[sender intValue] forWindow:[self window]];
@@ -2154,6 +2160,7 @@ snopGreenColor;
 
 - (IBAction)runTypeWordAction:(id)sender
 {
+    //NSLog(@"In runTypeWordAction---\n");
     short bit = [sender selectedRow];
     BOOL state  = [(NSButton*)[sender selectedCell] state];
     uint32_t currentRunMask = [model runTypeWord];
@@ -2168,6 +2175,17 @@ snopGreenColor;
         else      currentRunMask &= ~(1L<<bit);
     }
 
+    [runControl setRunType:currentRunMask];
+}
+
+- (void)roboSetRunType:(id)sender
+{
+    //NSLog(@"In roboSetRunType----");
+    uint32_t currentRunMask = [model runTypeWord];
+    for(int i=0; i<21; i++){
+        currentRunMask &= ~(1L<<i);
+    }
+    //NSLog(@"RunType--%u\n", currentRunMask);
     [runControl setRunType:currentRunMask];
 }
 
@@ -2750,7 +2768,6 @@ snopGreenColor;
 //Run Type Word
 - (void) runTypeWordChanged:(NSNotification*)aNote
 {
-
     if ([[aNote name] isEqualTo:ORRunTypeChangedNotification]) {
         uint32_t currentRunWord = [runControl runType];
         [model setRunTypeWord:currentRunWord];

@@ -79,6 +79,8 @@ NSString* ORRoutineChangedNotification = @"ORRoutineChangedNotification";
 NSString* ORROBOStartRunNotification = @"ORSNOPStartRun";
 NSString* ORROBOResyncRunNotification = @"ORSNOPResyncRun";
 NSString* ORROBOStopRunNotification = @"ORSNOPStopRun";
+NSString* ORROBOSetStandardRun = @"ORSNOPSetStandardRun";
+NSString* ORROBOSetRunTypeWord = @"ORSNOPSetRunTypeWord";
 
 BOOL isNotRunningOrIsInMaintenance()
 {
@@ -1783,13 +1785,14 @@ static NSComparisonResult compareXL3s(ORXL3Model *xl3_1, ORXL3Model *xl3_2, void
 - (void)roboRampDownCrate:(int)crateid
 {
     NSArray* xl3s = [[(ORAppDelegate*)[NSApp delegate] document] collectObjectsOfClass:NSClassFromString(@"ORXL3Model")];
-    
+
     //Handle crates 16B, 17 and 18
     NSString *HVBlabel = @"";
     if(crateid > 16){
         if(crateid == 17) HVBlabel = @"B";
         crateid--;
     }
+    
     for (id xl3 in xl3s) {
         if ([xl3 crateNumber] != crateid) continue;
         if ([xl3 isTriggerON]) {
@@ -1800,6 +1803,8 @@ static NSComparisonResult compareXL3s(ORXL3Model *xl3_1, ORXL3Model *xl3_2, void
         return;
     }
 }
+
+
 
 - (void) runNhitMonitor
 {
@@ -2454,6 +2459,12 @@ static NSComparisonResult compareXL3s(ORXL3Model *xl3_1, ORXL3Model *xl3_2, void
     [[NSNotificationCenter defaultCenter] postNotificationName:ORSNOPRunTypeWordChangedNotification object: self];
 }
 
+- (void) roboSetRunTypeWord:(uint32_t)aValue
+{
+    runTypeWord = aValue;
+    [[NSNotificationCenter defaultCenter] postNotificationName:ORROBOSetRunTypeWord object: self];
+}
+
 - (uint32_t) lastRunTypeWord
 {
     return lastRunTypeWord;
@@ -2547,7 +2558,7 @@ static NSComparisonResult compareXL3s(ORXL3Model *xl3_1, ORXL3Model *xl3_2, void
     NSArray* xl3s = [[(ORAppDelegate*)[NSApp delegate] document] collectObjectsOfClass:NSClassFromString(@"ORXL3Model")];
     NSString* crateString;
     NSString* value = @"na";
-    NSLog(@"%@", crateNum);
+    //NSLog(@"%@", crateNum);
     NSString* val = @"";
     
     //loop through all xl3 instances in Orca
@@ -2687,21 +2698,18 @@ static NSComparisonResult compareXL3s(ORXL3Model *xl3_1, ORXL3Model *xl3_2, void
 {
     //NSLog(@"Robo start model");
     [[NSNotificationCenter defaultCenter] postNotificationName:ORROBOStartRunNotification object:self];
-    
 }
 
 - (void) roboResyncRun
 {
     //NSLog(@"Robo resync model");
     [[NSNotificationCenter defaultCenter] postNotificationName:ORROBOResyncRunNotification object:self];
-    
 }
 
 - (void) roboStopRun
 {
     //NSLog(@"Robo stop model");
     [[NSNotificationCenter defaultCenter] postNotificationName:ORROBOStopRunNotification object:self];
-    
 }
 
 - (void) roboSetStandardRunType:(NSString*)name
@@ -2711,8 +2719,7 @@ static NSComparisonResult compareXL3s(ORXL3Model *xl3_1, ORXL3Model *xl3_2, void
     [self loadStandardRun:name withVersion:version];
     [self setStandardRunType:name];
     [self setStandardRunVersion:version];
-    [[NSNotificationCenter defaultCenter]
-     postNotificationName:@"roboSetStandardRun" object:self];
+    [[NSNotificationCenter defaultCenter] postNotificationName:ORROBOSetStandardRun object:self];
     [[NSNotificationCenter defaultCenter] postNotificationName:ORSNOPModelSRChangedNotification object:nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:ORSNOPModelSRVersionChangedNotification object:nil];
 }

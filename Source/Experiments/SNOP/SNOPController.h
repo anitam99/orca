@@ -325,7 +325,7 @@
 - (IBAction) stopAmellieRunAction:(id)sender;
 - (void)startAmellieRunNotification:(NSNotification *)aNote;
 - (IBAction)emergencyAmellieStopAction:(id)sender;
-
+- (void)roboSetRunType:(id)sender;
 
 #pragma mark ¥¥¥Details Interface Management
 - (void) tabView:(NSTabView*)aTabView didSelectTabViewItem:(NSTabViewItem*)tabViewItem;
