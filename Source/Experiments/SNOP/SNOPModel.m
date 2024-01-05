@@ -1792,6 +1792,7 @@ static NSComparisonResult compareXL3s(ORXL3Model *xl3_1, ORXL3Model *xl3_2, void
         if(crateid == 17) HVBlabel = @"B";
         crateid--;
     }
+    NSLog(@"%@",HVBlabel);
     
     for (id xl3 in xl3s) {
         if ([xl3 crateNumber] != crateid) continue;
@@ -2723,14 +2724,13 @@ static NSComparisonResult compareXL3s(ORXL3Model *xl3_1, ORXL3Model *xl3_2, void
 - (void) roboSetStandardRunType:(NSString*)name
                         version:(NSString*)version
 {
-    //NSLog(@"Set Standard Run Type Action---\n");
+    //NSLog(@"Set Standard Run Type Action");
+    [self loadStandardRun:name withVersion:version];
     [self setStandardRunType:name];
     [self setStandardRunVersion:version];
-    [self loadStandardRun:name withVersion:version];
+    [[NSNotificationCenter defaultCenter] postNotificationName:ORROBOSetStandardRun object:self];
     [[NSNotificationCenter defaultCenter] postNotificationName:ORSNOPModelSRChangedNotification object:nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:ORSNOPModelSRVersionChangedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName:ORROBOSetStandardRun object:self];
-    
 }
 
 - (void) stopRun
