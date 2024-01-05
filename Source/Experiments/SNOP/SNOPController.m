@@ -829,7 +829,7 @@ snopGreenColor;
      * stop run and then start run. Doing this resets the GTID, which resyncs
      * crate 9 after it goes out of sync :). */
 
-    NSLog(@"Inside the Resync Run Action");
+    NSLog(@"Inside the Resync Action");
     
     [model setResync:YES];
 
@@ -842,7 +842,6 @@ snopGreenColor;
     [self endEditing];
     [model stopRun];
 }
-
 
 - (void) runStatusChanged:(NSNotification*)aNotification
 {
