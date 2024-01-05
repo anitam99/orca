@@ -1103,7 +1103,6 @@
 		8434A23E055B3287002D3102 /* ORDataSetController.h in Headers */ = {isa = PBXBuildFile; fileRef = 84E151F10551D88A00503E02 /* ORDataSetController.h */; };
 		8434A242055B3287002D3102 /* ORCommandCenterController.h in Headers */ = {isa = PBXBuildFile; fileRef = 84BAA895055AD4C60005F507 /* ORCommandCenterController.h */; };
 		8434A244055B3287002D3102 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 2A37F4B9FDCFA73011CA2CEA /* Credits.rtf */; };
-		8434A246055B3287002D3102 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165FFE840EACC02AAC07 /* InfoPlist.strings */; };
 		8434A247055B3287002D3102 /* AboutBox.nib in Resources */ = {isa = PBXBuildFile; fileRef = F51E695D03AE4775015F64B1 /* AboutBox.nib */; };
 		8434A248055B3287002D3102 /* StatusWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = F51E696E03AE4775015F64B1 /* StatusWindow.nib */; };
 		8434A249055B3287002D3102 /* Document.nib in Resources */ = {isa = PBXBuildFile; fileRef = F51E697203AE4775015F64B1 /* Document.nib */; };
@@ -1578,8 +1577,6 @@
 		8457D25612F9986E00D3E3B4 /* ORiSegHVCardController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8457D25412F9986E00D3E3B4 /* ORiSegHVCardController.m */; };
 		8457D37712F9AB8A00D3E3B4 /* ORiSegHVCardDecoders.h in Headers */ = {isa = PBXBuildFile; fileRef = 8457D37512F9AB8A00D3E3B4 /* ORiSegHVCardDecoders.h */; };
 		8457D37812F9AB8A00D3E3B4 /* ORiSegHVCardDecoders.m in Sources */ = {isa = PBXBuildFile; fileRef = 8457D37612F9AB8A00D3E3B4 /* ORiSegHVCardDecoders.m */; };
-		8458E8ED15DA89B5005C43A9 /* Mail.app in Resources */ = {isa = PBXBuildFile; fileRef = 8458E8EC15DA89B5005C43A9 /* Mail.app */; };
-		8458E8EE15DA89EF005C43A9 /* Mail.app in Sources */ = {isa = PBXBuildFile; fileRef = 8458E8EC15DA89B5005C43A9 /* Mail.app */; };
 		8458E91515DA8A2A005C43A9 /* ScriptingBridge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8458E91415DA8A2A005C43A9 /* ScriptingBridge.framework */; };
 		8458EA3A15DBCFF6005C43A9 /* MPodCrate.nib in Resources */ = {isa = PBXBuildFile; fileRef = 8458EA3315DBCFF6005C43A9 /* MPodCrate.nib */; };
 		8458EA3B15DBCFF6005C43A9 /* MPodCrate.tif in Resources */ = {isa = PBXBuildFile; fileRef = 8458EA3415DBCFF6005C43A9 /* MPodCrate.tif */; };
@@ -3525,6 +3522,11 @@
 		EFEBD8951327588F00C96C86 /* ORXLGPSModel.m in Sources */ = {isa = PBXBuildFile; fileRef = EFEBD88F1327588F00C96C86 /* ORXLGPSModel.m */; };
 		EFEBD8961327588F00C96C86 /* XLGPS.nib in Resources */ = {isa = PBXBuildFile; fileRef = EFEBD8901327588F00C96C86 /* XLGPS.nib */; };
 		EFEBD8971327588F00C96C86 /* XLGPSIcon.tif in Resources */ = {isa = PBXBuildFile; fileRef = EFEBD8911327588F00C96C86 /* XLGPSIcon.tif */; };
+		FA7897362B031E0B0053D015 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1660FE840EACC02AAC07 /* InfoPlist.strings */; };
+		FA78973E2B0322510053D015 /* ORCamacExceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = FA78973D2B0322510053D015 /* ORCamacExceptions.h */; };
+		FA7897422B0322770053D015 /* ORColorBar.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7897412B0322760053D015 /* ORColorBar.h */; };
+		FA7897462B0322A60053D015 /* SNOP_Run_Constants.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7897452B0322A50053D015 /* SNOP_Run_Constants.h */; };
+		FA78974A2B0322B40053D015 /* Mail.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7897492B0322B40053D015 /* Mail.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -3533,6 +3535,8 @@
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.app";
 			fileType = pattern.proxy;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 				"$(DERIVED_FILES_DIR)/$(INPUT_FILE_BASE).h",
@@ -3543,6 +3547,8 @@
 			isa = PBXBuildRule;
 			compilerSpec = com.apple.compilers.proxy.script;
 			fileType = sourcecode.lex;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 				"lex.${INPUT_FILE_BASE}.m",
@@ -3553,6 +3559,8 @@
 			isa = PBXBuildRule;
 			compilerSpec = com.apple.compilers.proxy.script;
 			fileType = sourcecode.yacc;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 				"${INPUT_FILE_BASE}.tab.m",
@@ -3846,7 +3854,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		089C1660FE840EACC02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = InfoPlist.strings; sourceTree = "<group>"; };
+		089C1660FE840EACC02AAC07 /* InfoPlist.strings */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; path = InfoPlist.strings; sourceTree = "<group>"; };
 		0F16E30E1C493AD6003C9EC9 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		0F16E30F1C493AD6003C9EC9 /* .travis.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .travis.yml; sourceTree = "<group>"; };
 		0F16E3111C493AD6003C9EC9 /* ae.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ae.h; sourceTree = "<group>"; };
@@ -7302,6 +7310,10 @@
 		F5B1802C03B297FD015F64B1 /* ORCaen775Model.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = ORCaen775Model.m; sourceTree = "<group>"; };
 		F5B1802D03B297FD015F64B1 /* ORCaen775Controller.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ORCaen775Controller.h; sourceTree = "<group>"; };
 		F5B1803C03B299AD015F64B1 /* 775Card.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = 775Card.gif; path = Source/Objects/Hardware/Vme/CAEN/CV775/775Card.gif; sourceTree = SOURCE_ROOT; };
+		FA78973D2B0322510053D015 /* ORCamacExceptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ORCamacExceptions.h; path = Source/Objects/Hardware/Pci/PCItoCamac/ORCamacExceptions.h; sourceTree = "<group>"; };
+		FA7897412B0322760053D015 /* ORColorBar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ORColorBar.h; path = "Source/Widgets/Bar Graph/ORColorBar.h"; sourceTree = "<group>"; };
+		FA7897452B0322A50053D015 /* SNOP_Run_Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SNOP_Run_Constants.h; path = Source/Experiments/SNOP/SNOP_Run_Constants.h; sourceTree = "<group>"; };
+		FA7897492B0322B40053D015 /* Mail.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Mail.h; path = "../../../Library/Containers/com.apple.mail/Data/Library/Mail Downloads/5BF316BC-1476-43B9-874B-B7B936CC3E95/Mail.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -7528,6 +7540,10 @@
 		2A37F4AAFDCFA73011CA2CEA /* Orca */ = {
 			isa = PBXGroup;
 			children = (
+				FA7897492B0322B40053D015 /* Mail.h */,
+				FA7897452B0322A50053D015 /* SNOP_Run_Constants.h */,
+				FA7897412B0322760053D015 /* ORColorBar.h */,
+				FA78973D2B0322510053D015 /* ORCamacExceptions.h */,
 				846574BF1F9D449500B4BAA9 /* Orca.entitlements */,
 				CE68866C0D0CE0E400FA4158 /* PlugIns */,
 				F5AD34B203A7AEB8015F64B1 /* Readme */,
@@ -7559,7 +7575,7 @@
 				849A47191ECDE8DD00876389 /* onToggleSwitch.tif */,
 				84764CC005055A32005F64B1 /* UnderConstruction.gif */,
 				2A37F4B9FDCFA73011CA2CEA /* Credits.rtf */,
-				089C165FFE840EACC02AAC07 /* InfoPlist.strings */,
+				089C1660FE840EACC02AAC07 /* InfoPlist.strings */,
 				848B03060D6505C6007FDEBD /* OrcaFilterScript.icns */,
 				F54577F103AFCD1C015F64B1 /* Orca.icns */,
 				F54577F303AFCD1C015F64B1 /* OrcaDoc.icns */,
@@ -15187,6 +15203,10 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA78974A2B0322B40053D015 /* Mail.h in Headers */,
+				FA7897462B0322A60053D015 /* SNOP_Run_Constants.h in Headers */,
+				FA7897422B0322770053D015 /* ORColorBar.h in Headers */,
+				FA78973E2B0322510053D015 /* ORCamacExceptions.h in Headers */,
 				8434A186055B3287002D3102 /* ORAppDelegate.h in Headers */,
 				8434A187055B3287002D3102 /* ORAboutBox.h in Headers */,
 				4A3FF9782100E05700191150 /* binary_log_types.h in Headers */,
@@ -16576,7 +16596,7 @@
 				840C80001955E1D300E36622 /* RelaunchOrca in Resources */,
 				8434A244055B3287002D3102 /* Credits.rtf in Resources */,
 				848917781D6B73D300CF5AAF /* CytecVM8.gif in Resources */,
-				8434A246055B3287002D3102 /* InfoPlist.strings in Resources */,
+				FA7897362B031E0B0053D015 /* InfoPlist.strings in Resources */,
 				8434A247055B3287002D3102 /* AboutBox.nib in Resources */,
 				8434A248055B3287002D3102 /* StatusWindow.nib in Resources */,
 				8434A249055B3287002D3102 /* Document.nib in Resources */,
@@ -17449,7 +17469,6 @@
 				8432B6BE15D92D4700C5FB5D /* MJDString.tif in Resources */,
 				8432B6BF15D92D4700C5FB5D /* MJDPumpCart.nib in Resources */,
 				8432B6C015D92D4700C5FB5D /* MJDPumpCart.tif in Resources */,
-				8458E8ED15DA89B5005C43A9 /* Mail.app in Resources */,
 				8458EA3A15DBCFF6005C43A9 /* MPodCrate.nib in Resources */,
 				8458EA3B15DBCFF6005C43A9 /* MPodCrate.tif in Resources */,
 				8458EA3C15DBCFF6005C43A9 /* MPodCrateSmall.tif in Resources */,
@@ -17571,7 +17590,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C6FAAAEF1FBDD5320069E81C /* ORWG1220PulserController.m in Sources */,
-				8458E8EE15DA89EF005C43A9 /* Mail.app in Sources */,
 				8434A2A7055B3287002D3102 /* main.m in Sources */,
 				8434A2A8055B3287002D3102 /* ORAppDelegate.m in Sources */,
 				84BF74C217590CB000AF1F56 /* OR3DScanPlatformController.m in Sources */,
@@ -18712,14 +18730,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		089C165FFE840EACC02AAC07 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				089C1660FE840EACC02AAC07 /* English */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
 		2A37F4B9FDCFA73011CA2CEA /* Credits.rtf */ = {
 			isa = PBXVariantGroup;
 			children = (
