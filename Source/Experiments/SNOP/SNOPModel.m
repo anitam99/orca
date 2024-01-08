@@ -1792,7 +1792,6 @@ static NSComparisonResult compareXL3s(ORXL3Model *xl3_1, ORXL3Model *xl3_2, void
         if(crateid == 17) HVBlabel = @"B";
         crateid--;
     }
-    NSLog(@"%@",HVBlabel);
     
     for (id xl3 in xl3s) {
         if ([xl3 crateNumber] != crateid) continue;
