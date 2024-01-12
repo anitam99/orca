@@ -1781,6 +1781,10 @@ static NSComparisonResult compareXL3s(ORXL3Model *xl3_1, ORXL3Model *xl3_2, void
                     "%@ reason: %@\n", [e name], [e reason]);
     }
 }
+- (void)roboSaveAll
+{
+    [[self document] saveDocument:nil];
+}
 
 - (void)roboRampDownCrate:(int)crateid
 {

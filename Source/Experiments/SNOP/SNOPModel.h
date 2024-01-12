@@ -195,6 +195,7 @@ BOOL isNotRunningOrIsInMaintenance(void);
 - (void)roboSetStandardRunType;
 - (void)roboSetRunTypeWord;
 - (void)roboRampDownCrate:(int)crateid;
+- (void)roboSaveAll;
 
 - (id) init;
 - (void) awakeAfterDocumentLoaded;
