@@ -2574,7 +2574,7 @@ static NSComparisonResult compareXL3s(ORXL3Model *xl3_1, ORXL3Model *xl3_2, void
     NSString* hvNow = @"na";
     NSString* current = @"na";
     NSString* trigger = @"na";
-    NSLog(@"%@", crateNum);
+    //NSLog(@"%@", crateNum);
     
     //loop through all xl3 instances in Orca
     for (id xl3 in xl3s) {
