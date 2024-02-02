@@ -665,11 +665,12 @@
 
 - (IBAction) startRunAction:(id)sender
 {
-	if([[model document] isDocumentEdited]){
-		[[model document] afterSaveDo:@selector(startRun) withTarget:self];
-        [[model document] saveDocument:nil];
-    }
-	else [self startRun];
+	//if([[model document] isDocumentEdited]){
+	//	[[model document] afterSaveDo:@selector(startRun) withTarget:self];
+    //    [[model document] saveDocument:nil];
+    //}
+	//else [self startRun];
+    [self startRun];
 }
 
 - (NSString*) getStartingString
