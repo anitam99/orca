@@ -596,9 +596,9 @@ NSString* ORRemoteRunShutDownScriptNameChanged = @"ORRemoteRunShutDownScriptName
 {    
     [self sendSetup];
     
-    if([[self document] isDocumentEdited]){
-        [[self document] saveDocument:[self document]];
-    }
+    //if([[self document] isDocumentEdited]){
+    //    [[self document] saveDocument:[self document]];
+    //}
     
     NSLog(@"-------------------------------------\n");
     NSLog(@"Run %d started(%@).\n",[self runNumber]+1,doInit?@"cold start":@"quick start");
