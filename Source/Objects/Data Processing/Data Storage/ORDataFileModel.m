@@ -178,7 +178,7 @@ static const int currentVersion = 1;           // Current version
 
 - (void) runAboutToStart:(NSNotification*)aNotification
 {
-	if([[self document] isDocumentEdited])[[self document] saveDocument:nil];
+	//if([[self document] isDocumentEdited])[[self document] saveDocument:nil];
     if(saveConfiguration){
 		[configFolder ensureExists:[configFolder finalDirectoryName]]; 
 		if([[ORGlobal sharedGlobal] documentWasEdited] || !savedFirstTime){
