@@ -2686,21 +2686,21 @@ static NSComparisonResult compareXL3s(ORXL3Model *xl3_1, ORXL3Model *xl3_2, void
     //Start or restart the run
     if ([aRunModel isRunning]) {
         /* If there is already a run going, then we restart the run. */
-        if ([[self document] isDocumentEdited]) {
+        //if ([[self document] isDocumentEdited]) {
             /* If the GUI has changed, save the document first. */
-            [[self document] afterSaveDo: @selector(restartRun) withTarget:aRunModel];
-            [[self document] saveDocument:nil];
-        } else {
+        //    [[self document] afterSaveDo: @selector(restartRun) withTarget:aRunModel];
+        //    [[self document] saveDocument:nil];
+        //} else {
             [aRunModel restartRun];
-        }
+        //}
     } else {
         /* If there is no run going, then we start a new run. */
-        if ([[self document] isDocumentEdited]) {
-            [[self document] afterSaveDo: @selector(startRun) withTarget:aRunModel];
-            [[self document] saveDocument:nil];
-        } else {
+        //if ([[self document] isDocumentEdited]) {
+        //    [[self document] afterSaveDo: @selector(startRun) withTarget:aRunModel];
+        //    [[self document] saveDocument:nil];
+        //} else {
             [aRunModel startRun];
-        }
+        //}
     }
 
     return YES;
