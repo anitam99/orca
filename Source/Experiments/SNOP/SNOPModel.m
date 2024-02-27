@@ -2565,43 +2565,41 @@ static NSComparisonResult compareXL3s(ORXL3Model *xl3_1, ORXL3Model *xl3_2, void
     return hb;
 }
 
-- (NSString*) roboHVRead:(NSString*) crateNum 
+- (NSArray*) roboHVRead
 {
     NSArray* xl3s = [[(ORAppDelegate*)[NSApp delegate] document] collectObjectsOfClass:NSClassFromString(@"ORXL3Model")];
+    NSMutableArray *outerArray = [NSMutableArray array];
     NSString* crateString;
     NSString* hvStatus = @"na";
     NSString* nominal = @"na";
     NSString* hvNow = @"na";
     NSString* current = @"na";
     NSString* trigger = @"na";
-    //NSLog(@"%@", crateNum);
     
     //loop through all xl3 instances in Orca
     for (id xl3 in xl3s) {
         crateString = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 crateNumber]];
         
-        if (([xl3 crateNumber] == 16) && ([[crateNum uppercaseString] isEqualToString:@"16B"])){
+        if (([xl3 crateNumber] >= 0) && ([xl3 crateNumber] <= 18)){
+            hvStatus = [xl3 hvASwitch] ? @"ON":@"OFF";
+            nominal = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvNominalVoltageA]];
+            hvNow = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvAVoltageReadValue]];
+            current = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvACurrentReadValue]];
+            trigger = [xl3 isTriggerON] ? @"ON" : @"OFF";
+            [outerArray addObject:@[crateString, hvStatus, nominal, hvNow, current, trigger]];
+        }
+        
+        // Read 16B values
+        if ([xl3 crateNumber] == 16){
             hvStatus = [xl3 hvASwitch] ? @"ON":@"OFF";
             nominal = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvNominalVoltageB]];
             hvNow = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvBVoltageReadValue]];
             current = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvBCurrentReadValue]];
             trigger = [xl3 isTriggerON] ? @"ON" : @"OFF";
-            break;
-        }
-        else if (([xl3 crateNumber] >= 0) && ([xl3 crateNumber] <= 18)){
-            if ([crateString isEqualToString:crateNum]) {
-                hvStatus = [xl3 hvASwitch] ? @"ON":@"OFF";
-                nominal = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvNominalVoltageA]];
-                hvNow = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvAVoltageReadValue]];
-                current = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvACurrentReadValue]];
-                trigger = [xl3 isTriggerON] ? @"ON" : @"OFF";
-                break;
-            }
+            [outerArray addObject:@[@"16B", hvStatus, nominal, hvNow, current, trigger]];
         }
     }
-    
-    crateString = [NSString stringWithFormat:@"%@ %@ %@ %@ %@", hvStatus, nominal, hvNow, current, trigger];
-    return crateString;
+    return outerArray;
 }
 
 - (void) setLastStandardRunVersion:(NSString *)aValue
