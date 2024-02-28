@@ -101,7 +101,7 @@ BOOL isNotRunningOrIsInMaintenance(void);
     NSString* lastStandardRunType;
     NSString* lastStandardRunVersion;
     NSNumber* standardRunTableVersion;
-
+    
     bool rolloverRun;
 
     int retryGetRunNumber;
@@ -189,6 +189,10 @@ BOOL isNotRunningOrIsInMaintenance(void);
 @property (setter=setLogServerPort:) int logPort;
 @property (nonatomic,assign) bool resync;
 
+//roboshifter functions ------
+- (NSString*) SNOPHeartbeat;
+- (NSString*) roboHVRead:(NSString*) crateNum;
+- (NSArray*) roboHVReadAll;
 - (void)roboStartRun;
 - (void)roboResyncRun;
 - (void)roboStopRun;
@@ -345,6 +349,8 @@ BOOL isNotRunningOrIsInMaintenance(void);
 
 //tellie functions -------
 -(void) getAmellieRunFiles;
+
+
 
 // ECA
 -(ECARun*) anECARun;

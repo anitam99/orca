@@ -2568,15 +2568,14 @@ static NSComparisonResult compareXL3s(ORXL3Model *xl3_1, ORXL3Model *xl3_2, void
 - (NSString*) roboHVRead:(NSString*) crateNum
 {
     NSArray* xl3s = [[(ORAppDelegate*)[NSApp delegate] document] collectObjectsOfClass:NSClassFromString(@"ORXL3Model")];
-    NSString* crateString;
-    NSString* hvStatus = @"na";
-    NSString* nominal = @"na";
-    NSString* hvNow = @"na";
-    NSString* current = @"na";
-    NSString* trigger = @"na";
-    //NSLog(@"%@", crateNum);
+    NSString* crateString = @"";
+    NSString* hvStatus = @"";
+    NSString* nominal = @"";
+    NSString* hvNow = @"";
+    NSString* current = @"";
+    NSString* trigger = @"";
     
-    //loop through all xl3 instances in Orca
+    // loop through all xl3 instances in Orca
     for (id xl3 in xl3s) {
         crateString = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 crateNumber]];
         
@@ -2600,6 +2599,8 @@ static NSComparisonResult compareXL3s(ORXL3Model *xl3_1, ORXL3Model *xl3_2, void
         }
     }
     
+
+
     crateString = [NSString stringWithFormat:@"%@ %@ %@ %@ %@", hvStatus, nominal, hvNow, current, trigger];
     return crateString;
 }
@@ -2607,25 +2608,38 @@ static NSComparisonResult compareXL3s(ORXL3Model *xl3_1, ORXL3Model *xl3_2, void
 - (NSArray*) roboHVReadAll
 {
     NSArray* xl3s = [[(ORAppDelegate*)[NSApp delegate] document] collectObjectsOfClass:NSClassFromString(@"ORXL3Model")];
-    NSMutableArray *outerArray = [NSMutableArray array];
-    NSString* crateString;
-    NSString* hvStatus = @"na";
-    NSString* nominal = @"na";
-    NSString* hvNow = @"na";
-    NSString* current = @"na";
-    NSString* trigger = @"na";
     
-    //loop through all xl3 instances in Orca
+    NSMutableArray *outerArray = [NSMutableArray arrayWithCapacity:20];
+    
+    
+    for (NSUInteger x = 0; x < 19; x++) {
+        [outerArray addObject:@[@""]];
+    }
+    
+    NSArray *innerArray = [[NSArray alloc] init];
+    NSArray *innerArray2 = [[NSArray alloc] init];
+    NSString* crateString;
+    NSString* hvStatus;
+    NSString* nominal;
+    NSString* hvNow;
+    NSString* current;
+    NSString* trigger;
+    
+    // Loop through all xl3 instances in Orca
     for (id xl3 in xl3s) {
         crateString = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 crateNumber]];
         
         if (([xl3 crateNumber] >= 0) && ([xl3 crateNumber] <= 18)){
+            NSUInteger crateNum = (NSUInteger)[xl3 crateNumber];
+            
             hvStatus = [xl3 hvASwitch] ? @"ON":@"OFF";
             nominal = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvNominalVoltageA]];
             hvNow = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvAVoltageReadValue]];
             current = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvACurrentReadValue]];
             trigger = [xl3 isTriggerON] ? @"ON" : @"OFF";
-            [outerArray addObject:@[crateString, hvStatus, nominal, hvNow, current, trigger]];
+            innerArray = @[crateString, hvStatus, nominal, hvNow, current, trigger];
+            
+            [outerArray replaceObjectAtIndex:crateNum withObject:innerArray];
         }
         
         // Read 16B values
@@ -2635,9 +2649,12 @@ static NSComparisonResult compareXL3s(ORXL3Model *xl3_1, ORXL3Model *xl3_2, void
             hvNow = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvBVoltageReadValue]];
             current = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvBCurrentReadValue]];
             trigger = [xl3 isTriggerON] ? @"ON" : @"OFF";
-            [outerArray addObject:@[@"16B", hvStatus, nominal, hvNow, current, trigger]];
+            innerArray2 = @[@"16B", hvStatus, nominal, hvNow, current, trigger];
         }
     }
+    // Insert 16B details
+    [outerArray insertObject:innerArray2 atIndex:17];
+    
     return outerArray;
 }
 
