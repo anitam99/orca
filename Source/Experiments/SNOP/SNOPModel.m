@@ -2583,7 +2583,7 @@ static NSComparisonResult compareXL3s(ORXL3Model *xl3_1, ORXL3Model *xl3_2, void
             hvStatus = [xl3 hvASwitch] ? @"ON":@"OFF";
             nominal = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvNominalVoltageB]];
             hvNow = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvBVoltageReadValue]];
-            current = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvBCurrentReadValue]];
+            current = [NSString stringWithFormat:@"%f",(float)[xl3 hvBCurrentReadValue]];
             trigger = [xl3 isTriggerON] ? @"ON" : @"OFF";
             break;
         }
@@ -2592,7 +2592,7 @@ static NSComparisonResult compareXL3s(ORXL3Model *xl3_1, ORXL3Model *xl3_2, void
                 hvStatus = [xl3 hvASwitch] ? @"ON":@"OFF";
                 nominal = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvNominalVoltageA]];
                 hvNow = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvAVoltageReadValue]];
-                current = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvACurrentReadValue]];
+                current = [NSString stringWithFormat:@"%f",(float)[xl3 hvACurrentReadValue]];
                 trigger = [xl3 isTriggerON] ? @"ON" : @"OFF";
                 break;
             }
@@ -2635,7 +2635,7 @@ static NSComparisonResult compareXL3s(ORXL3Model *xl3_1, ORXL3Model *xl3_2, void
             hvStatus = [xl3 hvASwitch] ? @"ON":@"OFF";
             nominal = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvNominalVoltageA]];
             hvNow = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvAVoltageReadValue]];
-            current = [NSString stringWithFormat:@"%d",(unsigned int)[xl3 hvACurrentReadValue]];
+            current = [NSString stringWithFormat:@"%f",(float)[xl3 hvACurrentReadValue]];
             trigger = [xl3 isTriggerON] ? @"ON" : @"OFF";
             innerArray = @[crateString, hvStatus, nominal, hvNow, current, trigger];
             
