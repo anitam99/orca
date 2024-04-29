@@ -72,6 +72,7 @@ BOOL isNotRunningOrIsInMaintenance(void);
     unsigned int _debugDBPort;
     NSString* _debugDBIPAddress;
     NSMutableArray* _debugDBConnectionHistory;
+    NSMutableArray* _roboMessage;
     NSUInteger _debugDBIPNumberIndex;
     ORPingTask*	_debugDBPingTask;
     
@@ -175,6 +176,7 @@ BOOL isNotRunningOrIsInMaintenance(void);
 @property (nonatomic,copy) NSString* amellieRunNameLabel;
 @property (nonatomic,assign) unsigned int debugDBPort;
 @property (nonatomic,copy) NSString* debugDBIPAddress;
+@property (nonatomic,copy) NSMutableArray* roboMessage;
 @property (nonatomic,retain) NSMutableArray* debugDBConnectionHistory;
 @property (nonatomic,assign) NSUInteger debugDBIPNumberIndex;
 @property (nonatomic,retain) ORPingTask* debugDBPingTask;
@@ -193,14 +195,17 @@ BOOL isNotRunningOrIsInMaintenance(void);
 - (NSString*) SNOPHeartbeat;
 - (NSString*) roboHVRead:(NSString*) crateNum;
 - (NSArray*) roboHVReadAll;
-- (void)roboStartRun;
-- (void)roboResyncRun;
-- (void)roboStopRun;
-- (void)roboSetStandardRunType;
-- (void)roboSetRunTypeWord;
-- (void)roboRampDownCrate:(int)crateid;
-- (void)roboSaveAll;
-
+- (void) roboStartRun;
+- (void) roboResyncRun;
+- (void) roboStopRun;
+- (void) roboSetStandardRunType;
+- (void) roboSetRunTypeWord;
+- (void) roboRampDownCrate:(int)crateid;
+- (void) roboSaveAll;
+- (NSArray*) roboMessage;
+- (void) setRoboMessage:(NSString *)newMessage;
+- (void) clearRoboMessage:(NSString *)newMessage;
+- (void) clearAllRoboMessages;
 - (id) init;
 - (void) awakeAfterDocumentLoaded;
 
@@ -283,6 +288,7 @@ BOOL isNotRunningOrIsInMaintenance(void);
 - (void) shipSubRunRecord;
 - (void) shipEPEDRecord;
 - (void) stillWaitingForBuffers;
+- (void) enterFlushBuffersAlert;
 - (void) abortWaitingForBuffers;
 
 #pragma mark ¥¥¥Accessors
@@ -378,6 +384,7 @@ extern NSString* ORSNOPModelSRChangedNotification;
 extern NSString* ORSNOPModelSRVersionChangedNotification;
 extern NSString* ORSNOPModelNhitMonitorChangedNotification;
 extern NSString* ORSNOPStillWaitingForBuffersNotification;
+extern NSString* ORSNOPEnterFlushBufferAlertNotification;
 extern NSString* ORSNOPNotWaitingForBuffersNotification;
 extern NSString* ORRoutineChangedNotification;
 extern NSString* ORROBOStartRunNotification;

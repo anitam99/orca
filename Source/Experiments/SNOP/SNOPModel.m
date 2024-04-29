@@ -74,6 +74,7 @@ NSString* ORSNOPModelSRChangedNotification = @"ORSNOPModelSRChangedNotification"
 NSString* ORSNOPModelSRVersionChangedNotification = @"ORSNOPModelSRVersionChangedNotification";
 NSString* ORSNOPModelNhitMonitorChangedNotification = @"ORSNOPModelNhitMonitorChangedNotification";
 NSString* ORSNOPStillWaitingForBuffersNotification = @"ORSNOPStillWaitingForBuffersNotification";
+NSString* ORSNOPEnterFlushBufferAlertNotification = @"ORSNOPEnterFlushBufferAlertNotification";
 NSString* ORSNOPNotWaitingForBuffersNotification = @"ORSNOPNotWaitingForBuffersNotification";
 NSString* ORRoutineChangedNotification = @"ORRoutineChangedNotification";
 NSString* ORROBOStartRunNotification = @"ORSNOPStartRun";
@@ -151,9 +152,9 @@ tellieRunFiles = _tellieRunFiles;
 
     [self initOrcaDBConnectionHistory];
     [self initDebugDBConnectionHistory];
-
+    
     [[self undoManager] enableUndoRegistration];
-
+    
     return self;
 }
 
@@ -1163,6 +1164,12 @@ err:
     state = RUNNING;
 }
 
+- (void) enterFlushBuffersAlert
+{
+    /* Flushing Buffers by executing abortWaitingForBuffers and closing the alert popup */
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:ORSNOPEnterFlushBufferAlertNotification object:self];
+}
+
 - (void) stillWaitingForBuffers
 {
     /* We're stopping a run but our buffers are taking a while to clear, so
@@ -1176,6 +1183,8 @@ err:
 {
     /* Give up on waiting for our buffers to clear at the end of a run */
     waitingForBuffers = false;
+    [self clearRoboMessage:@"Flush Buffers Alert Open"];
+    //[self setRoboMessage:@"Buffers Flushed"];
 }
 
 - (void) _waitForBuffers
@@ -2090,6 +2099,35 @@ static NSComparisonResult compareXL3s(ORXL3Model *xl3_1, ORXL3Model *xl3_2, void
     id result;
     result = [_debugDBIPAddress retain];
     return [result autorelease];
+}
+
+- (NSArray*) roboMessage
+{
+    // Return roboMessages
+    if (!_roboMessage) {
+        _roboMessage = [[NSMutableArray alloc] init];
+    }
+    
+    return _roboMessage;
+}
+
+- (void)setRoboMessage:(NSString *)newMessage {
+    // Add a new roboshifter message
+    if (!_roboMessage) {
+        _roboMessage = [[NSMutableArray alloc] init];
+    }
+    
+    [_roboMessage addObject:[newMessage copy]];
+}
+
+- (void) clearRoboMessage:(NSString *)oldMessage {
+    // Clear a specific roboshifter message
+    [_roboMessage removeObject:[oldMessage copy]];
+}
+
+- (void)clearAllRoboMessages {
+    // Clear all roboshifter messages
+    _roboMessage = [[NSMutableArray alloc] init];
 }
 
 - (void) setDebugDBIPAddress:(NSString*)debugIPAddress

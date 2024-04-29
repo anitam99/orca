@@ -597,8 +597,13 @@ snopGreenColor;
                      selector : @selector(stillWaitingForBuffers:)
                          name : ORSNOPStillWaitingForBuffersNotification
                         object: nil];
-
+           
     [notifyCenter addObserver : self
+                     selector : @selector(enterFlushBufferAlert:)
+                         name : ORSNOPEnterFlushBufferAlertNotification
+                        object: nil];
+
+      [notifyCenter addObserver : self
                      selector : @selector(notWaitingForBuffers:)
                          name : ORSNOPNotWaitingForBuffersNotification
                         object: nil];
@@ -1011,18 +1016,27 @@ snopGreenColor;
      * of a run (only for OS X 10.10 or later).  Must be called
      * only from the main thread. */
 #if defined(MAC_OS_X_VERSION_10_10) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_10 // 10.10-specific
+    [model setRoboMessage:@"Flush Buffers Alert Open"];
     NSString* s = [NSString stringWithFormat:@"Waiting for buffers to empty..."];
     waitingForBuffersAlert = [[[NSAlert alloc] init] autorelease];
     [waitingForBuffersAlert setMessageText:s];
     [waitingForBuffersAlert addButtonWithTitle:@"Force Stop and LOSE DATA!"];
     [waitingForBuffersAlert setAlertStyle:NSAlertStyleInformational];
-    [waitingForBuffersAlert beginSheetModalForWindow:[self window] completionHandler:^(NSModalResponse result){
+    [waitingForBuffersAlert beginSheetModalForWindow:[self window] completionHandler:^(NSModalResponse result){    
         if (result == NSAlertFirstButtonReturn) {
             [model abortWaitingForBuffers]; // don't wait for buffers to clear
             waitingForBuffersAlert = nil;
         }
     }];
+    
 #endif
+}
+
+- (void) enterFlushBufferAlert:(NSNotification*)aNote
+{
+    [waitingForBuffersAlert.window close];
+    [model abortWaitingForBuffers];
+    waitingForBuffersAlert = nil;    
 }
 
 - (void) notWaitingForBuffers:(NSNotification*)aNote
