@@ -204,7 +204,7 @@ BOOL isNotRunningOrIsInMaintenance(void);
 - (void) roboSaveAll;
 - (NSArray*) roboMessage;
 - (void) setRoboMessage:(NSString *)newMessage;
-- (void) clearRoboMessage:(NSString *)newMessage;
+- (void) clearRoboMessage:(NSString *)oldMessage;
 - (void) clearAllRoboMessages;
 - (id) init;
 - (void) awakeAfterDocumentLoaded;
