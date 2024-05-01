@@ -244,13 +244,13 @@ SYNTHESIZE_SINGLETON_FOR_ORCLASS(CommandCenter);
     ORCommandClient* client = [[[ORCommandClient alloc] initWithNetSocket:inNewNetSocket] autorelease];
     [client setDelegate:self];
     [client setTimeConnected:[NSDate date]];
-    //[self sendCurrentAlarms:client];
-    //[self sendCurrentRunStatus:client];
+    [self sendCurrentAlarms:client];
+    [self sendCurrentRunStatus:client];
     
-    //if(!heartBeatTimer) {
-    //    heartBeatTimer = [[NSTimer scheduledTimerWithTimeInterval:15.0 target:self selector:@selector(timeToBeat:) userInfo:nil repeats:YES]retain];
-    //    [self sendHeartBeat:client];
-    //}
+    if(!heartBeatTimer) {
+        heartBeatTimer = [[NSTimer scheduledTimerWithTimeInterval:15.0 target:self selector:@selector(timeToBeat:) userInfo:nil repeats:YES]retain];
+        [self sendHeartBeat:client];
+    }
     [clients addObject:client];
     [self clientChanged:client];
 }
@@ -260,11 +260,11 @@ SYNTHESIZE_SINGLETON_FOR_ORCLASS(CommandCenter);
     [clients removeObject:aClient];
     [self clientChanged:aClient];
     
-    //if([clients count] == 0) {
-    //    [heartBeatTimer invalidate];
-    //    [heartBeatTimer release];
-    //    heartBeatTimer = nil;
-    //}
+    if([clients count] == 0) {
+        [heartBeatTimer invalidate];
+        [heartBeatTimer release];
+        heartBeatTimer = nil;
+    }
     
 }
 
